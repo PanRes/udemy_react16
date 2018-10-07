@@ -10,29 +10,36 @@ class App extends Component {
         stringOutput: ''
     }
 
-    onClickChar = (event, index) => {
-        const stringOutput = [...this.state.stringOutput];
-        stringOutput.splice(index, 1).join('');
-        this.setState({stringOutput: stringOutput});
+    onClickChar = (id) => {
+        let test = this.state.stringOutput
+			.split('')
+			.filter((char, index) => id !== index)
+			.join('');
+
+        console.log(test);
+        this.setState({
+            stringOutput: test
+        });
     }
 
-    inputChangedHandler = (event, style) => {
+    stringToCharComponet = (style) => (
+        <div style={style}>
+            {this.state.stringOutput.split('').map((character, index) => (
+                <CharComponent
+                    style={style}
+                    cssStyle={style}
+                    character={character}
+                    clicked={() => this.onClickChar(index)}
+                />
+            ))}
+        </div>
+    )
+
+    inputChangedHandler = (event) => {
 
         const inputString = event.target.value;
 
-        const stringOutput = (
-            <div style={style}>
-                {inputString.split('').map((character,index) => {
-                    return <CharComponent
-                            style={style}
-                            cssStyle={style}
-                            character={character}
-                            clicked={() => this.onClickChar(index)}/>
-                })}
-            </div>
-        )
-
-        this.setState({stringOutput: stringOutput,inputLength: inputString.length});
+        this.setState({stringOutput: inputString,inputLength: inputString.length});
     }
 
 
@@ -59,12 +66,14 @@ class App extends Component {
                 <div className="App">
                     <p>Hint: Keep in mind that JavaScript strings are basically arrays!</p>
                     <input type="text"
-                           onChange={(event) => this.inputChangedHandler(event, style)}/>
+                           onChange={(event) => this.inputChangedHandler(event)}
+                           value={this.state.stringOutput}
+                    />
                     <ValidationComponent
                             inputLength={this.state.inputLength}
                             value={this.state.stringOutput}/>
                     <p>Input's length: {this.state.inputLength}</p>
-                    <p>{this.state.stringOutput}</p>
+                    {this.stringToCharComponet(style)}
                 </div>
             </div>
         );
